@@ -1,14 +1,80 @@
-Binaries
-DerivedDataCache
-Intermediate
-Saved
-.vscode
-.vs
-*.VC.db
-*.opensdf
-*.opendb
-*.sdf
+# Unreal Engine 5 Gitignore Template (для UE5.6, C++ проекты)
+
+# UE Generated Folders (игнорируем билды, кэши и промежуточные файлы)
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Visual Studio / C++ Specific (для VS2022 в UE5.6)
+.vs/
 *.sln
 *.suo
-*.xcodeproj
-*.xcworkspace
+*.user
+*.rsuser
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.opendb
+*.opensdf
+*.sdf
+*.pdb
+*.ilk
+*.obj
+*.o
+*.tlog
+
+# VSCode / Rider / IDE Specific
+.vscode/
+.idea/
+**/.history
+
+# macOS / OS Generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and Temp
+*.log
+*~
+*.tmp
+*.bak
+
+# Plugins Intermediates (если плагины в проекте)
+Plugins/*/Intermediate/
+Plugins/*/Binaries/
+
+# Ignore everything in Build and Binaries subfolders
+/Build/
+/Binaries/
+
+# Do not ignore core project files
+!*.uproject
+!*.uplugin
+!Config/
+!Content/
+!Source/
+!Plugins/
+
+# For large assets, use Git LFS instead of ignoring Content
+# В .gitattributes: *.uasset filter=lfs diff=lfs merge=lfs -text
+# *.umap filter=lfs diff=lfs merge=lfs -text
+
+# Miscellaneous
+*.exe
+*.dll
+*.so
+*.dylib
+*.zip
+*.7z
+*.tar
+*.gz
+*.rar
+*.iso
+*.dmg
+*.msi
