@@ -50,6 +50,12 @@ void ARTSCamera::BeginPlay()
 void ARTSCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// === 0. СКРОЛЛ ПО КРАЯМ ЭКРАНА ===
+	if (bEdgeScrollingEnabled)
+	{
+		HandleEdgeScrolling(DeltaTime);
+	}
 	// === 1. ПРОВЕРКА СЖАТИЯ SPRINGARM ===
 	FVector UnfixedCamPos = SpringArmComponent->GetUnfixedCameraPosition();
 	FVector SpringPos = SpringArmComponent->GetComponentLocation();
@@ -187,7 +193,8 @@ void ARTSCamera::EnableRotate()
 void ARTSCamera::DisableRotate()
 {
 	bRotationEnabled = false;
-	bRotationEnabled = false;
+
+	
 
 	// ПОКАЗЫВАЕМ КУРСОР
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
@@ -296,4 +303,53 @@ void ARTSCamera::UpdatePawnHeight(float DeltaTime)
     FVector CurrentLoc = GetActorLocation();
     float NewZ = FMath::FInterpTo(CurrentLoc.Z, TargetZ, DeltaTime, 12.f);
     SetActorLocation(FVector(CurrentLoc.X, CurrentLoc.Y, NewZ));
+}
+
+void ARTSCamera::HandleEdgeScrolling(float DeltaTime)
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC) return;
+
+	// Получаем позицию мыши и размеры экрана
+	float MouseX, MouseY;
+	if (!PC->GetMousePosition(MouseX, MouseY)) return;
+
+	int32 ViewportSizeX, ViewportSizeY;
+	PC->GetViewportSize(ViewportSizeX, ViewportSizeY);
+
+	// Вектор для накопления движения
+	FVector2D MovementDirection = FVector2D::ZeroVector;
+
+	// Проверяем все четыре границы
+	if (MouseX <= EdgeScrollBorder) // Левая граница
+	{
+		MovementDirection.X -= 1.0f;
+	}
+	else if (MouseX >= ViewportSizeX - EdgeScrollBorder) // Правая граница
+	{
+		MovementDirection.X += 1.0f;
+	}
+
+	if (MouseY <= EdgeScrollBorder) // Верхняя граница
+	{
+		MovementDirection.Y += 1.0f; // Инвертируем Y для камеры
+	}
+	else if (MouseY >= ViewportSizeY - EdgeScrollBorder) // Нижняя граница
+	{
+		MovementDirection.Y -= 1.0f; // Инвертируем Y для камеры
+	}
+
+	// Если есть движение по краю - применяем его
+	if (!MovementDirection.IsNearlyZero())
+	{
+		MovementDirection = MovementDirection.GetSafeNormal();
+        
+		FVector Forward = SpringArmComponent->GetForwardVector();
+		FVector Right = SpringArmComponent->GetRightVector();
+
+		TargetLocation += Forward * MovementDirection.Y * EdgeScrollSpeed * DeltaTime * CurrentMultiplier;
+		TargetLocation += Right * MovementDirection.X * EdgeScrollSpeed * DeltaTime * CurrentMultiplier;
+
+		GetTerrainPosition(TargetLocation);
+	}
 }

@@ -155,4 +155,17 @@ private:
 
 	UPROPERTY()
     float CurrentMultiplier = 1.f;
+
+	// Edge Scrolling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Edge Scrolling", meta=(AllowPrivateAccess = "true"))
+	bool bEdgeScrollingEnabled = true;
+    
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Edge Scrolling", meta = (ClampMin = "0", ClampMax = "500", AllowPrivateAccess = "true"))
+	float EdgeScrollBorder = 20.0f;
+    
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Edge Scrolling", meta = (AllowPrivateAccess = "true"))
+	float EdgeScrollSpeed = 1000.0f;
+
+private:
+	void HandleEdgeScrolling(float DeltaTime);
 };
